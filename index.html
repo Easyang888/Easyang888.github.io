@@ -1,113 +1,175 @@
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>我的个人主页</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Easyang888 · Tech Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-    }
+<style>
+/* ===== 基础 ===== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b0f1a;
+  color: #e5e7eb;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* ===== Canvas 背景 ===== */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
+/* ===== 量子光束 ===== */
+.beam {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 200%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(56,189,248,.8),
+    transparent
+  );
+  animation: beamMove 6s linear infinite;
+  z-index: 0;
+}
+@keyframes beamMove {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
 
-    .card {
-      background: var(--card);
-      max-width: 420px;
-      width: 100%;
-      padding: 2rem;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,.25);
-    }
+/* ===== 卡片 ===== */
+.card {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  margin-top: 10vh;
+  max-width: 420px;
+  background: rgba(30,41,59,.85);
+  backdrop-filter: blur(12px);
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(56,189,248,.15);
+}
 
-    .avatar {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #38bdf8, #818cf8);
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-    }
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg,#38bdf8,#818cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
 
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: .4rem;
+}
 
-    p {
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 1.5rem;
-    }
+p {
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
 
-    .links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.95rem;
-    }
+.links a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: .95rem;
+}
 
-    a:hover {
-      text-decoration: underline;
-    }
+.links a:hover {
+  text-decoration: underline;
+}
 
-    footer {
-      margin-top: 1.5rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-  </style>
+footer {
+  margin-top: 1.5rem;
+  font-size: .85rem;
+  color: #64748b;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="card">
-    <div class="avatar">👤</div>
-    <h1>Easyang888</h1>
-    <p>
-      这里是我的个人主页。<br>
-      我是一名开发者。
-    </p>
+<!-- 量子光束 -->
+<div class="beam"></div>
 
-    <div class="links">
-      <a href="https://github.com/Easyang888" target="_blank">GitHub</a>
-      <a href="mailto:Ins7786321@163.com">Email</a>
-      <a href="#">博客</a>
-    </div>
+<!-- 雪花粒子 -->
+<canvas id="bg"></canvas>
 
-    <footer>
-      © 2026 Easyang888
-    </footer>
+<!-- 主卡片 -->
+<div class="card">
+  <div class="avatar">👤</div>
+  <h1>Easyang888</h1>
+  <p>
+    这里是我的个人主页。<br>
+    我是一名开发者 / 技术探索者。
+  </p>
+
+  <div class="links">
+    <a href="https://github.com/Easyang888" target="_blank">GitHub</a>
+    <a href="mailto:Ins7786321@163.com">Email</a>
+    <a href="#">博客</a>
   </div>
+
+  <footer>© 2026 Easyang888</footer>
+</div>
+
+<script>
+/* ===== 雪花粒子 ===== */
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let w,h;
+resize();
+window.addEventListener('resize', resize);
+
+function resize(){
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+
+const particles = Array.from({length: 120}, () => ({
+  x: Math.random()*w,
+  y: Math.random()*h,
+  r: Math.random()*1.2+0.5,
+  s: Math.random()*0.6+0.3
+}));
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#38bdf8';
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fill();
+    p.y += p.s;
+    if(p.y > h) p.y = 0;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
 
 </body>
 </html>
+EOF
