@@ -1,207 +1,294 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>Easyang888 · Tech Portfolio</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Easyang888 · 起始页</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #0b0f1a;
-  color: #e5e7eb;
-  min-height: 100vh;
-  overflow-x: hidden;
+  font-family:'SF Pro Display','PingFang SC',system-ui,-apple-system,sans-serif;
+  height:100vh; overflow:hidden; color:#fff;
 }
 
-/* 背景粒子 */
+/* 背景 */
 #bg {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
+  position:fixed; inset:0;
+  background:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1920&q=80')
+    center/cover no-repeat;
+  transition:filter .6s ease, transform .6s ease;
+  z-index:-2;
+}
+#bg.blur { filter:blur(18px) brightness(.65); transform:scale(1.03); }
+
+.glass {
+  position:fixed; inset:0; z-index:-1;
+  backdrop-filter:blur(0);
+  -webkit-backdrop-filter:blur(0);
+  transition:backdrop-filter .6s, -webkit-backdrop-filter .6s;
+  pointer-events:none;
+}
+.glass.show {
+  backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
 }
 
-/* 光束容器 */
-#beams {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+/* 主体 */
+.wrap {
+  height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.time-area { text-align:center; margin-bottom:28px; cursor:default; }
+.greeting { font-size:clamp(.95rem,2vw,1.15rem); opacity:.85; }
+.clock { font-size:clamp(3rem,7vw,5rem); font-weight:300; letter-spacing:2px; }
+.date { font-size:clamp(.82rem,1.6vw,.95rem); opacity:.7; margin-top:4px; }
+
+/* 搜索 */
+.search-box { width:min(560px,88vw); }
+.search-inner {
+  display:flex; align-items:center;
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:14px; padding:0 16px; height:52px;
+  transition:.35s;
+}
+.search-inner.active {
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.45);
+  box-shadow:0 8px 40px rgba(255,255,255,.12);
+}
+.search-inner input {
+  flex:1; border:none; outline:none;
+  background:transparent; color:#fff;
+  font-size:1rem; padding:0 12px;
+}
+.search-inner button {
+  background:linear-gradient(135deg,#4facfe,#00f2fe);
+  border:none; color:#fff; padding:6px 16px;
+  border-radius:10px; cursor:pointer;
 }
 
-.beam {
-  position: absolute;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(56,189,248,.9),
-    transparent
-  );
-  animation: beamMove 6s linear infinite;
+/* 一言 */
+.quote-wrap {
+  margin-top:16px; min-height:2.4em;
+  opacity:0; transform:translateY(6px);
+  transition:.4s; pointer-events:none;
 }
+.quote-wrap.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+.quote { font-style:italic; cursor:pointer; padding:4px 8px; border-radius:6px; display:inline-block; }
+.quote:hover { background:rgba(255,255,255,.08); }
 
-@keyframes beamMove {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+.copy-tip {
+  position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,.8); padding:6px 18px;
+  border-radius:8px; font-size:.85rem;
+  opacity:0; transition:.2s; pointer-events:none; z-index:99;
 }
+.copy-tip.show { opacity:1; }
 
-/* 卡片 */
-.card {
-  position: relative;
-  z-index: 1;
-  margin: auto;
-  margin-top: 10vh;
-  max-width: 520px;
-  background: rgba(30,41,59,.85);
-  backdrop-filter: blur(14px);
-  padding: 2rem;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 0 80px rgba(56,189,248,.2);
+/* 快捷 */
+.grid { display:flex; gap:18px; margin-top:28px; flex-wrap:wrap; justify-content:center; }
+.item { width:64px; text-align:center; cursor:pointer; }
+.item img { width:36px; height:36px; border-radius:10px; }
+
+/* ===== 壁纸弹窗 ===== */
+.wallpaper-btn {
+  position:fixed; right:18px; bottom:18px;
+  background:rgba(255,255,255,.1); backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:10px; padding:7px 14px;
+  font-size:.78rem; color:#fff; cursor:pointer; z-index:20;
 }
+#bgInput { display:none; }
 
-.avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  margin: 0 auto 1rem;
-  background: linear-gradient(135deg,#38bdf8,#818cf8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
+.wall-panel {
+  position:fixed; right:18px; bottom:60px;
+  width:220px;
+  background:rgba(20,20,30,.92);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px; padding:12px;
+  display:none; flex-direction:column; gap:8px;
+  z-index:21;
+  max-height:360px; overflow-y:auto;
 }
+.wall-panel.show { display:flex; }
 
-h1 {
-  font-size: 1.6rem;
-  margin-bottom: .4rem;
+.wall-thumb {
+  width:100%; aspect-ratio:16/9;
+  border-radius:8px; overflow:hidden;
+  cursor:pointer; border:2px solid transparent;
+  transition:border-color .2s;
 }
+.wall-thumb:hover { border-color:#4facfe; }
+.wall-thumb img { width:100%; height:100%; object-fit:cover; }
 
-.typing {
-  color: #38bdf8;
-  font-size: 1rem;
-  height: 1.5em;
-  margin-bottom: 1.2rem;
-}
-
-p {
-  color: #94a3b8;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.links {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.links a {
-  color: #38bdf8;
-  text-decoration: none;
-  font-size: .95rem;
-}
-
-.links a:hover {
-  text-decoration: underline;
-}
-
-footer {
-  margin-top: 1.5rem;
-  font-size: .85rem;
-  color: #64748b;
+.wall-label {
+  font-size:.7rem; opacity:.6; text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="bg"></canvas>
-<div id="beams"></div>
+<div id="bg"></div>
+<div class="glass" id="glass"></div>
+<div class="copy-tip" id="copytip">已复制 ✓</div>
 
-<div class="card">
-  <div class="avatar">👤</div>
-  <h1>Easyang888</h1>
-  <div class="typing" id="typing"></div>
-
-  <p>
-    这里是我的个人主页。<br>
-    我是一名开发者 / 技术探索者。
-  </p>
-
-  <div class="links">
-    <a href="https://github.com/Easyang888" target="_blank">GitHub</a>
-    <a href="mailto:Ins7786321@163.com">Email</a>
-    <a href="#">博客</a>
-  </div>
-
-  <footer>© 2026 Easyang888</footer>
+<!-- 壁纸选择面板 -->
+<div class="wall-panel" id="wallPanel">
+  <!-- JS 动态插入 -->
 </div>
 
+<div class="wrap" id="page" onclick="blurSearch()">
+
+  <div class="time-area" onclick="event.stopPropagation()">
+    <div class="greeting" id="greet"></div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="date" id="date"></div>
+  </div>
+
+  <div class="search-box" id="sBox" onclick="event.stopPropagation()">
+    <div class="search-inner" id="sInner">
+      <input id="kw" placeholder="搜索… (Ctrl+K)"
+             onfocus="activateSearch()"
+             onblur="blurSearchDelay()"
+             onkeydown="if(event.key==='Enter') doSearch()" />
+      <button onclick="doSearch()">搜索</button>
+    </div>
+    <div class="quote-wrap" id="quoteWrap">
+      <div class="quote" id="quoteEl" onclick="copyQuote()"></div>
+    </div>
+  </div>
+
+  <div class="grid" onclick="event.stopPropagation()">
+    <div class="item" onclick="openUrl('https://github.com/Easyang888')"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"><span>GitHub</span></div>
+    <div class="item" onclick="openUrl('https://chat.openai.com')"><img src="https://www.google.com/s2/favicons?sz=64&domain=openai.com"><span>ChatGPT</span></div>
+    <div class="item" onclick="openUrl('https://www.zhihu.com')"><img src="https://www.zhihu.com/favicon.ico"><span>知乎</span></div>
+    <div class="item" onclick="openUrl('https://www.baidu.com')"><img src="https://www.baidu.com/favicon.ico"><span>百度</span></div>
+  </div>
+</div>
+
+<!-- 壁纸按钮 -->
+<button class="wallpaper-btn" id="wallBtn"
+  onclick="toggleWallPanel()"
+  ondblclick="document.getElementById('bgInput').click()"
+>🖼 换壁纸</button>
+<input type="file" id="bgInput" accept="image/*" onchange="uploadBg(this)" />
+
 <script>
-/* ===== 雪花粒子 ===== */
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let w,h;
-resize();
-window.addEventListener('resize', resize);
-function resize(){
-  w = canvas.width = innerWidth;
-  h = canvas.height = innerHeight;
+/* ===== 时间 ===== */
+const greet=document.getElementById('greet'),
+      clock=document.getElementById('clock'),
+      date=document.getElementById('date');
+function updateTime(){
+  const d=new Date(),h=d.getHours();
+  greet.textContent=h<6?'凌晨好 ☾':h<12?'早上好 ☀️':h<14?'中午好 🍵':h<18?'下午好 🌤':'晚上好 🌙';
+  clock.textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
+  date.textContent=d.getFullYear()+'年 '+(d.getMonth()+1)+'月 '+d.getDate()+'日 周'+['日','一','二','三','四','五','六'][d.getDay()];
+}
+updateTime(); setInterval(updateTime,1000);
+
+/* ===== 搜索 ===== */
+function doSearch(){
+  const q=document.getElementById('kw').value.trim();
+  if(q) location.href='https://www.baidu.com/s?wd='+encodeURIComponent(q);
 }
 
-const particles = Array.from({length: 120}, () => ({
-  x: Math.random()*w,
-  y: Math.random()*h,
-  r: Math.random()*1.2+.5,
-  s: Math.random()*.6+.3
-}));
-
-function draw(){
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle = '#38bdf8';
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    p.y+=p.s;
-    if(p.y>h) p.y=0;
-  });
-  requestAnimationFrame(draw);
+/* ===== 模糊 ===== */
+const bg=document.getElementById('bg'),
+      glass=document.getElementById('glass'),
+      sInner=document.getElementById('sInner'),
+      quoteWrap=document.getElementById('quoteWrap');
+function activateSearch(){
+  bg.classList.add('blur'); glass.classList.add('show'); sInner.classList.add('active'); showQuote();
 }
-draw();
-
-/* ===== 多条光束 + 鼠标跟随 ===== */
-const beams = document.getElementById('beams');
-for(let i=0;i<6;i++){
-  const b = document.createElement('div');
-  b.className = 'beam';
-  b.style.left = `${10+i*15}%`;
-  beams.appendChild(b);
+function blurSearchDelay(){
+  setTimeout(()=>{
+    bg.classList.remove('blur'); glass.classList.remove('show'); sInner.classList.remove('active'); quoteWrap.classList.remove('show');
+  },180);
 }
 
-document.addEventListener('mousemove', e=>{
-  beams.querySelectorAll('.beam').forEach((b,i)=>{
-    const dx = (e.clientX/w)*100;
-    b.style.left = `${dx + (i-2.5)*5}%`;
-  });
+/* ===== 一言 ===== */
+const quotes=[
+  {txt:"路漫漫其修远兮，吾将上下而求索。",from:"屈原《离骚》"},
+  {txt:"流年莫虚掷，华发不相容。",from:"方干《送从兄郜》"},
+  {txt:"行到水穷处，坐看云起时。",from:"王维《终南别业》"},
+  {txt:"纸上得来终觉浅，绝知此事要躬行。",from:"陆游《冬夜读书示子聿》"},
+  {txt:"不积跬步，无以至千里。",from:"荀子《劝学》"}
+];
+let currentQuote={txt:"",from:""};
+const quoteEl=document.getElementById('quoteEl');
+function showQuote(){
+  currentQuote=quotes[Math.floor(Math.random()*quotes.length)];
+  quoteEl.textContent='"'+currentQuote.txt+'"';
+  quoteEl.dataset.from='—— '+currentQuote.from;
+  quoteWrap.classList.add('show');
+}
+function copyQuote(){
+  navigator.clipboard.writeText(`"${currentQuote.txt}"\n—— ${currentQuote.from}`);
+  const t=document.getElementById('copytip'); t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1400);
+}
+
+/* ===== 在线壁纸 ===== */
+const ONLINE_BGS=[
+  {thumb:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=60',
+   full:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1920&q=80'},
+  {thumb:'https://images.unsplash.com/photo-1470071459604-3b5ec3f37442?auto=format&fit=crop&w=400&q=60',
+   full:'https://images.unsplash.com/photo-1470071459604-3b5ec3f37442?auto=format&fit=crop&w=1920&q=80'},
+  {thumb:'https://images.unsplash.com/photo-1519681393784-d12026736e00?auto=format&fit=crop&w=400&q=60',
+   full:'https://images.unsplash.com/photo-1519681393784-d12026736e00?auto=format&fit=crop&w=1920&q=80'},
+  {thumb:'https://images.unsplash.com/photo-1469474968028-56623f09e05b?auto=format&fit=crop&w=400&q=60',
+   full:'https://images.unsplash.com/photo-1469474968028-56623f09e05b?auto=format&fit=crop&w=1920&q=80'}
+];
+
+const wallPanel=document.getElementById('wallPanel');
+ONLINE_BGS.forEach(b=>{
+  const d=document.createElement('div');
+  d.className='wall-thumb';
+  d.innerHTML=`<img src="${b.thumb}" alt="wallpaper">`;
+  d.onclick=()=>{
+    bg.style.backgroundImage=`url('${b.full}')`;
+    localStorage.setItem('startpage_bg', b.full);
+    wallPanel.classList.remove('show');
+  };
+  wallPanel.appendChild(d);
+});
+wallPanel.insertAdjacentHTML('beforeend','<div class="wall-label">双击按钮可本地上传</div>');
+
+function toggleWallPanel(){
+  wallPanel.classList.toggle('show');
+}
+
+/* ===== 本地上传 ===== */
+function uploadBg(input){
+  if(!input.files[0]) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    bg.style.backgroundImage=`url(${e.target.result})`;
+    localStorage.setItem('startpage_bg',e.target.result);
+    wallPanel.classList.remove('show');
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* 恢复 */
+(function(){
+  const saved=localStorage.getItem('startpage_bg');
+  if(saved) bg.style.backgroundImage=`url(${saved})`;
+})();
+
+/* 快捷键 */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey&&e.key==='k')||(e.altKey&&e.key==='s')){
+    e.preventDefault(); document.getElementById('kw').focus();
+  }
+  if(e.key==='Escape'){ blurSearchDelay(); wallPanel.classList.remove('show'); }
 });
 
-/* ===== 打字机效果 ===== */
-const text = '开发者 · 技术探索者 · 持续进化中';
-const el = document.getElementById('typing');
-let i=0;
-(function type(){
-  if(i<=text.length){
-    el.textContent = text.slice(0,i++);
-    setTimeout(type, 90);
-  }
-})();
+function openUrl(u){ location.href=u; }
 </script>
-
 </body>
 </html>
