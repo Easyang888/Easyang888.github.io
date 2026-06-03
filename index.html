@@ -1,4 +1,3 @@
-cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,7 +6,6 @@ cat > index.html << 'EOF'
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===== 基础 ===== */
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -17,48 +15,52 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== Canvas 背景 ===== */
+/* 背景粒子 */
 #bg {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
 }
 
-/* ===== 量子光束 ===== */
-.beam {
+/* 光束容器 */
+#beams {
   position: fixed;
-  top: -100%;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.beam {
+  position: absolute;
   width: 2px;
-  height: 200%;
+  height: 100%;
   background: linear-gradient(
     180deg,
     transparent,
-    rgba(56,189,248,.8),
+    rgba(56,189,248,.9),
     transparent
   );
   animation: beamMove 6s linear infinite;
-  z-index: 0;
-}
-@keyframes beamMove {
-  0% { top: -100%; }
-  100% { top: 100%; }
 }
 
-/* ===== 卡片 ===== */
+@keyframes beamMove {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* 卡片 */
 .card {
   position: relative;
   z-index: 1;
   margin: auto;
   margin-top: 10vh;
-  max-width: 420px;
+  max-width: 520px;
   background: rgba(30,41,59,.85);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   padding: 2rem;
   border-radius: 16px;
   text-align: center;
-  box-shadow: 0 0 60px rgba(56,189,248,.15);
+  box-shadow: 0 0 80px rgba(56,189,248,.2);
 }
 
 .avatar {
@@ -76,6 +78,13 @@ body {
 h1 {
   font-size: 1.6rem;
   margin-bottom: .4rem;
+}
+
+.typing {
+  color: #38bdf8;
+  font-size: 1rem;
+  height: 1.5em;
+  margin-bottom: 1.2rem;
 }
 
 p {
@@ -111,16 +120,14 @@ footer {
 
 <body>
 
-<!-- 量子光束 -->
-<div class="beam"></div>
-
-<!-- 雪花粒子 -->
 <canvas id="bg"></canvas>
+<div id="beams"></div>
 
-<!-- 主卡片 -->
 <div class="card">
   <div class="avatar">👤</div>
   <h1>Easyang888</h1>
+  <div class="typing" id="typing"></div>
+
   <p>
     这里是我的个人主页。<br>
     我是一名开发者 / 技术探索者。
@@ -142,17 +149,16 @@ const ctx = canvas.getContext('2d');
 let w,h;
 resize();
 window.addEventListener('resize', resize);
-
 function resize(){
-  w = canvas.width = window.innerWidth;
-  h = canvas.height = window.innerHeight;
+  w = canvas.width = innerWidth;
+  h = canvas.height = innerHeight;
 }
 
 const particles = Array.from({length: 120}, () => ({
   x: Math.random()*w,
   y: Math.random()*h,
-  r: Math.random()*1.2+0.5,
-  s: Math.random()*0.6+0.3
+  r: Math.random()*1.2+.5,
+  s: Math.random()*.6+.3
 }));
 
 function draw(){
@@ -160,16 +166,42 @@ function draw(){
   ctx.fillStyle = '#38bdf8';
   particles.forEach(p=>{
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
     ctx.fill();
-    p.y += p.s;
-    if(p.y > h) p.y = 0;
+    p.y+=p.s;
+    if(p.y>h) p.y=0;
   });
   requestAnimationFrame(draw);
 }
 draw();
+
+/* ===== 多条光束 + 鼠标跟随 ===== */
+const beams = document.getElementById('beams');
+for(let i=0;i<6;i++){
+  const b = document.createElement('div');
+  b.className = 'beam';
+  b.style.left = `${10+i*15}%`;
+  beams.appendChild(b);
+}
+
+document.addEventListener('mousemove', e=>{
+  beams.querySelectorAll('.beam').forEach((b,i)=>{
+    const dx = (e.clientX/w)*100;
+    b.style.left = `${dx + (i-2.5)*5}%`;
+  });
+});
+
+/* ===== 打字机效果 ===== */
+const text = '开发者 · 技术探索者 · 持续进化中';
+const el = document.getElementById('typing');
+let i=0;
+(function type(){
+  if(i<=text.length){
+    el.textContent = text.slice(0,i++);
+    setTimeout(type, 90);
+  }
+})();
 </script>
 
 </body>
 </html>
-EOF
